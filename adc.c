@@ -39,7 +39,18 @@ void adc_init(void)
   while (ADC1->CR & ADC_CR_ADCAL)
     ;
 
+  /* Reference manual A.7.2 ADC enable sequence code example */
+  /* (1) Ensure that ADRDY = 0 */
+  /* (4) Wait until ADC ready */
+  if ((ADC1->ISR & ADC_ISR_ADRDY) != 0) /* (1) */
+  {
+	/* (2) Clear ADRDY */
+	ADC1->ISR |= ADC_ISR_ADRDY; /* (2) */
+  }
+
+  /* (3) Enable the ADC */
   ADC1->CR = ADC_CR_ADEN;
+  /* (4) Wait until ADC ready */
   while (!(ADC1->ISR & ADC_ISR_ADRDY))
     ;
 }
